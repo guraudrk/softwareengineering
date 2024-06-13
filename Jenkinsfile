@@ -3,19 +3,18 @@ pipeline {
     
     environment {
         GIT_CREDENTIALS = credentials('Hongik-Test')
-    }
-    
-    tools {
-        maven 'Maven'
+        MAVEN_HOME = tool name: 'Maven', type: 'maven'
     }
     
     stages {
         stage('Checkout SCM') {
             steps {
-                checkout([$class: 'GitSCM', 
-                          branches: [[name: 'main']], 
-                          userRemoteConfigs: [[credentialsId: 'Hongik-Test', 
-                                                url: 'https://github.com/guraudrk/softwareengineering.git']]])
+                timeout(time: 10, unit: 'MINUTES') {
+                    checkout([$class: 'GitSCM', 
+                              branches: [[name: 'main']], 
+                              userRemoteConfigs: [[credentialsId: 'Hongik-Test', 
+                                                    url: 'https://github.com/guraudrk/softwareengineering.git']]])
+                }
             }
         }
         
@@ -24,14 +23,12 @@ pipeline {
                 configFileProvider([configFile(fileId: 'maven-settings-xml', variable: 'MAVEN_SETTINGS')]) {
                     timeout(time: 20, unit: 'MINUTES') {
                         script {
-                            // 디버깅을 위해 파일 목록 출력
+                            // 디렉터리 확인
                             bat 'dir'
                             // MAVEN_SETTINGS 경로 출력
                             bat 'echo MAVEN_SETTINGS=%MAVEN_SETTINGS%'
-                            // Maven을 사용하여 빌드 실행하는 디렉토리 설정
-                            dir('softwareengineering') {
-                                bat "mvn clean install --settings %MAVEN_SETTINGS%"
-                            }
+                            // Maven을 MAVEN_HOME 경로에서 실행하여 빌드
+                            bat "%MAVEN_HOME%\\bin\\mvn clean install --settings %MAVEN_SETTINGS%"
                         }
                     }
                 }
@@ -43,10 +40,8 @@ pipeline {
                 configFileProvider([configFile(fileId: 'maven-settings-xml', variable: 'MAVEN_SETTINGS')]) {
                     timeout(time: 20, unit: 'MINUTES') {
                         script {
-                            // Maven Wrapper를 사용하여 테스트 실행 (Windows에서는 .\mvnw.cmd를 사용)
-                            dir('softwareengineering') {
-                                bat "mvn test --settings %MAVEN_SETTINGS%"
-                            }
+                            // Maven을 MAVEN_HOME 경로에서 실행하여 테스트
+                            bat "%MAVEN_HOME%\\bin\\mvn test --settings %MAVEN_SETTINGS%"
                         }
                     }
                 }
@@ -63,10 +58,8 @@ pipeline {
                 configFileProvider([configFile(fileId: 'maven-settings-xml', variable: 'MAVEN_SETTINGS')]) {
                     timeout(time: 30, unit: 'MINUTES') {
                         script {
-                            // Maven Wrapper를 사용하여 성능 테스트 실행 (Windows에서는 .\mvnw.cmd를 사용)
-                            dir('softwareengineering') {
-                                bat "mvn exec:java -Dexec.mainClass=\"com.example.PerformanceTest\" --settings %MAVEN_SETTINGS%"
-                            }
+                            // Maven을 MAVEN_HOME 경로에서 실행하여 성능 테스트
+                            bat "%MAVEN_HOME%\\bin\\mvn exec:java -Dexec.mainClass=\"com.example.PerformanceTest\" --settings %MAVEN_SETTINGS%"
                         }
                     }
                 }
