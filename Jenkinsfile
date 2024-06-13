@@ -38,7 +38,46 @@ pipeline {
             }
         }
         
-        // 나머지 stage들은 이하 동일하게 처리
+        stage('Test') {
+            steps {
+                configFileProvider([configFile(fileId: 'maven-settings-xml', variable: 'MAVEN_SETTINGS')]) {
+                    timeout(time: 20, unit: 'MINUTES') {
+                        script {
+                            // Maven Wrapper를 사용하여 테스트 실행 (Windows에서는 .\mvnw.cmd를 사용)
+                            dir('softwareengineering') {
+                                bat "mvn test --settings %MAVEN_SETTINGS%"
+                            }
+                        }
+                    }
+                }
+            }
+            post {
+                always {
+                    junit '**/target/surefire-reports/*.xml'
+                }
+            }
+        }
+        
+        stage('Performance Test') {
+            steps {
+                configFileProvider([configFile(fileId: 'maven-settings-xml', variable: 'MAVEN_SETTINGS')]) {
+                    timeout(time: 30, unit: 'MINUTES') {
+                        script {
+                            // Maven Wrapper를 사용하여 성능 테스트 실행 (Windows에서는 .\mvnw.cmd를 사용)
+                            dir('softwareengineering') {
+                                bat "mvn exec:java -Dexec.mainClass=\"com.example.PerformanceTest\" --settings %MAVEN_SETTINGS%"
+                            }
+                        }
+                    }
+                }
+            }
+            post {
+                always {
+                    // 성능 테스트 결과 아카이브
+                    archiveArtifacts artifacts: '**/performance-reports/**', allowEmptyArchive: true
+                }
+            }
+        }
     }
 
     post {
