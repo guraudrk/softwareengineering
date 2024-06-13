@@ -11,12 +11,12 @@ pipeline {
     }
 
     stages {
-        stage('Clone Repository') {
+        stage('Checkout SCM') {
             steps {
                 timeout(time: 10, unit: 'MINUTES') { // 타임아웃 설정
                     checkout([$class: 'GitSCM', 
                               branches: [[name: 'main']], 
-                              userRemoteConfigs: [[credentialsId: GIT_CREDENTIALS, 
+                              userRemoteConfigs: [[credentialsId: 'Hongik-Test', 
                                                     url: 'https://github.com/guraudrk/softwareengineering.git']]])
                 }
             }
