@@ -5,6 +5,11 @@ pipeline {
         GIT_CREDENTIALS = credentials('Hongik-Test') // Jenkins에 저장된 크리덴셜 ID 사용
     }
     
+    tools {
+        // Maven을 자동으로 설치할 수 있도록 설정
+        maven 'Maven'
+    }
+    
     stages {
         stage('Checkout SCM') {
             steps {
