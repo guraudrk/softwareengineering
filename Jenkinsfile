@@ -6,7 +6,7 @@ pipeline {
     }
     
     tools {
-        // Maven을 자동으로 설치할 수 있도록 설정
+        // Global Tool Configuration에서 설정한 Maven Tool 사용
         maven 'Maven'
     }
     
@@ -31,8 +31,8 @@ pipeline {
                             bat 'dir'
                             // MAVEN_SETTINGS 경로 출력
                             bat 'echo MAVEN_SETTINGS=%MAVEN_SETTINGS%'
-                            // Maven Wrapper를 사용하여 빌드 실행 (Windows에서는 .\mvnw.cmd를 사용)
-                            bat "mvnw.cmd clean install --settings %MAVEN_SETTINGS%"
+                            // Maven을 사용하여 빌드 실행
+                            bat "mvn clean install --settings %MAVEN_SETTINGS%"
                         }
                     }
                 }
@@ -44,8 +44,8 @@ pipeline {
                 configFileProvider([configFile(fileId: 'maven-settings-xml', variable: 'MAVEN_SETTINGS')]) {
                     timeout(time: 20, unit: 'MINUTES') {
                         script {
-                            // Maven Wrapper를 사용하여 테스트 실행 (Windows에서는 .\mvnw.cmd를 사용)
-                            bat "mvnw.cmd test --settings %MAVEN_SETTINGS%"
+                            // Maven을 사용하여 테스트 실행
+                            bat "mvn test --settings %MAVEN_SETTINGS%"
                         }
                     }
                 }
@@ -62,8 +62,8 @@ pipeline {
                 configFileProvider([configFile(fileId: 'maven-settings-xml', variable: 'MAVEN_SETTINGS')]) {
                     timeout(time: 30, unit: 'MINUTES') {
                         script {
-                            // Maven Wrapper를 사용하여 성능 테스트 실행 (Windows에서는 .\mvnw.cmd를 사용)
-                            bat "mvnw.cmd exec:java -Dexec.mainClass=\"com.example.PerformanceTest\" --settings %MAVEN_SETTINGS%"
+                            // Maven을 사용하여 성능 테스트 실행
+                            bat "mvn exec:java -Dexec.mainClass=\"com.example.PerformanceTest\" --settings %MAVEN_SETTINGS%"
                         }
                     }
                 }
