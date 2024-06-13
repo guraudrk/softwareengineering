@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     environment {
-        GIT_CREDENTIALS = credentials('Hongik-Test') // Jenkins에 저장된 크리덴셜 ID 사용
+        GIT_CREDENTIALS = credentials('Hongik-Test')
     }
     
     tools {
@@ -13,7 +13,7 @@ pipeline {
     stages {
         stage('Checkout SCM') {
             steps {
-                timeout(time: 10, unit: 'MINUTES') { // 타임아웃 설정
+                timeout(time: 10, unit: 'MINUTES') {
                     checkout([$class: 'GitSCM', 
                               branches: [[name: 'main']], 
                               userRemoteConfigs: [[credentialsId: 'Hongik-Test', 
@@ -25,14 +25,14 @@ pipeline {
         stage('Build') {
             steps {
                 configFileProvider([configFile(fileId: 'maven-settings-xml', variable: 'MAVEN_SETTINGS')]) {
-                    timeout(time: 20, unit: 'MINUTES') { // 타임아웃 설정
+                    timeout(time: 20, unit: 'MINUTES') {
                         script {
                             // 디버깅을 위해 파일 목록 출력
                             bat 'dir'
                             // MAVEN_SETTINGS 경로 출력
                             bat 'echo MAVEN_SETTINGS=%MAVEN_SETTINGS%'
                             // Maven Wrapper를 사용하여 빌드 실행 (Windows에서는 .\mvnw.cmd를 사용)
-                            bat ".\\mvnw.cmd clean install --settings %MAVEN_SETTINGS%"
+                            bat "mvnw.cmd clean install --settings %MAVEN_SETTINGS%"
                         }
                     }
                 }
@@ -42,10 +42,10 @@ pipeline {
         stage('Test') {
             steps {
                 configFileProvider([configFile(fileId: 'maven-settings-xml', variable: 'MAVEN_SETTINGS')]) {
-                    timeout(time: 20, unit: 'MINUTES') { // 타임아웃 설정
+                    timeout(time: 20, unit: 'MINUTES') {
                         script {
                             // Maven Wrapper를 사용하여 테스트 실행 (Windows에서는 .\mvnw.cmd를 사용)
-                            bat ".\\mvnw.cmd test --settings %MAVEN_SETTINGS%"
+                            bat "mvnw.cmd test --settings %MAVEN_SETTINGS%"
                         }
                     }
                 }
@@ -60,10 +60,10 @@ pipeline {
         stage('Performance Test') {
             steps {
                 configFileProvider([configFile(fileId: 'maven-settings-xml', variable: 'MAVEN_SETTINGS')]) {
-                    timeout(time: 30, unit: 'MINUTES') { // 타임아웃 설정
+                    timeout(time: 30, unit: 'MINUTES') {
                         script {
                             // Maven Wrapper를 사용하여 성능 테스트 실행 (Windows에서는 .\mvnw.cmd를 사용)
-                            bat ".\\mvnw.cmd exec:java -Dexec.mainClass=\"com.example.PerformanceTest\" --settings %MAVEN_SETTINGS%"
+                            bat "mvnw.cmd exec:java -Dexec.mainClass=\"com.example.PerformanceTest\" --settings %MAVEN_SETTINGS%"
                         }
                     }
                 }
