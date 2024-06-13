@@ -21,8 +21,8 @@ pipeline {
             steps {
                 timeout(time: 20, unit: 'MINUTES') { // 타임아웃 설정
                     script {
-                        def mvnHome = tool name: 'Maven', type: 'maven'
-                        bat "${mvnHome}\\bin\\mvn clean install"
+                        // Maven Wrapper를 사용하여 빌드 실행
+                        sh './mvnw clean install'
                     }
                 }
             }
@@ -32,8 +32,8 @@ pipeline {
             steps {
                 timeout(time: 20, unit: 'MINUTES') { // 타임아웃 설정
                     script {
-                        def mvnHome = tool name: 'Maven', type: 'maven'
-                        bat "${mvnHome}\\bin\\mvn test"
+                        // Maven Wrapper를 사용하여 테스트 실행
+                        sh './mvnw test'
                     }
                 }
             }
@@ -48,13 +48,14 @@ pipeline {
             steps {
                 timeout(time: 30, unit: 'MINUTES') { // 타임아웃 설정
                     script {
-                        def mvnHome = tool name: 'Maven', type: 'maven'
-                        bat "${mvnHome}\\bin\\mvn exec:java -Dexec.mainClass=\"com.example.PerformanceTest\""
+                        // Maven Wrapper를 사용하여 성능 테스트 실행
+                        sh './mvnw exec:java -Dexec.mainClass="com.example.PerformanceTest"'
                     }
                 }
             }
             post {
                 always {
+                    // 성능 테스트 결과 아카이브
                     archiveArtifacts artifacts: '**/performance-reports/**', allowEmptyArchive: true
                 }
             }
@@ -63,7 +64,7 @@ pipeline {
 
     post {
         always {
-            cleanWs()
+            cleanWs() // Workspace 정리
         }
     }
 }
