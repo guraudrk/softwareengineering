@@ -24,10 +24,12 @@ pipeline {
         
         stage('Build') {
             steps {
-                timeout(time: 20, unit: 'MINUTES') { // 타임아웃 설정
-                    script {
-                        // Maven Wrapper를 사용하여 빌드 실행 (Windows에서는 mvnw.cmd를 사용)
-                        bat './mvnw.cmd clean install'
+                configFileProvider([configFile(fileId: 'maven-settings-xml', variable: 'MAVEN_SETTINGS')]) {
+                    timeout(time: 20, unit: 'MINUTES') { // 타임아웃 설정
+                        script {
+                            // Maven Wrapper를 사용하여 빌드 실행 (Windows에서는 mvnw.cmd를 사용)
+                            bat "./mvnw.cmd clean install --settings %MAVEN_SETTINGS%"
+                        }
                     }
                 }
             }
@@ -35,10 +37,12 @@ pipeline {
         
         stage('Test') {
             steps {
-                timeout(time: 20, unit: 'MINUTES') { // 타임아웃 설정
-                    script {
-                        // Maven Wrapper를 사용하여 테스트 실행 (Windows에서는 mvnw.cmd를 사용)
-                        bat './mvnw.cmd test'
+                configFileProvider([configFile(fileId: 'maven-settings-xml', variable: 'MAVEN_SETTINGS')]) {
+                    timeout(time: 20, unit: 'MINUTES') { // 타임아웃 설정
+                        script {
+                            // Maven Wrapper를 사용하여 테스트 실행 (Windows에서는 mvnw.cmd를 사용)
+                            bat "./mvnw.cmd test --settings %MAVEN_SETTINGS%"
+                        }
                     }
                 }
             }
@@ -51,10 +55,12 @@ pipeline {
         
         stage('Performance Test') {
             steps {
-                timeout(time: 30, unit: 'MINUTES') { // 타임아웃 설정
-                    script {
-                        // Maven Wrapper를 사용하여 성능 테스트 실행 (Windows에서는 mvnw.cmd를 사용)
-                        bat './mvnw.cmd exec:java -Dexec.mainClass="com.example.PerformanceTest"'
+                configFileProvider([configFile(fileId: 'maven-settings-xml', variable: 'MAVEN_SETTINGS')]) {
+                    timeout(time: 30, unit: 'MINUTES') { // 타임아웃 설정
+                        script {
+                            // Maven Wrapper를 사용하여 성능 테스트 실행 (Windows에서는 mvnw.cmd를 사용)
+                            bat "./mvnw.cmd exec:java -Dexec.mainClass=\"com.example.PerformanceTest\" --settings %MAVEN_SETTINGS%"
+                        }
                     }
                 }
             }
