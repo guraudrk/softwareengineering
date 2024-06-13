@@ -1,11 +1,11 @@
 pipeline {
     agent any
-    
+
     environment {
         GIT_CREDENTIALS = credentials('Hongik-Test')
         MAVEN_HOME = tool name: 'Maven', type: 'maven'
     }
-    
+
     stages {
         stage('Checkout SCM') {
             steps {
@@ -17,7 +17,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Build') {
             steps {
                 configFileProvider([configFile(fileId: 'maven-settings-xml', variable: 'MAVEN_SETTINGS')]) {
@@ -33,7 +33,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Test') {
             steps {
                 configFileProvider([configFile(fileId: 'maven-settings-xml', variable: 'MAVEN_SETTINGS')]) {
@@ -54,7 +54,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Performance Test') {
             steps {
                 configFileProvider([configFile(fileId: 'maven-settings-xml', variable: 'MAVEN_SETTINGS')]) {
