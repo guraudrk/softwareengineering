@@ -27,6 +27,10 @@ pipeline {
                 configFileProvider([configFile(fileId: 'maven-settings-xml', variable: 'MAVEN_SETTINGS')]) {
                     timeout(time: 20, unit: 'MINUTES') { // 타임아웃 설정
                         script {
+                            // 디버깅을 위해 파일 목록 출력
+                            bat 'dir'
+                            // MAVEN_SETTINGS 경로 출력
+                            bat 'echo MAVEN_SETTINGS=%MAVEN_SETTINGS%'
                             // Maven Wrapper를 사용하여 빌드 실행 (Windows에서는 .\mvnw.cmd를 사용)
                             bat ".\\mvnw.cmd clean install --settings %MAVEN_SETTINGS%"
                         }
