@@ -23,10 +23,10 @@ pipeline {
                 configFileProvider([configFile(fileId: 'maven-settings-xml', variable: 'MAVEN_SETTINGS')]) {
                     timeout(time: 20, unit: 'MINUTES') {
                         script {
-                            // 프로젝트 루트 디렉토리로 이동
+                            // 프로젝트 디렉토리로 이동
                             dir('softwareengineering') {
-                                // Maven Wrapper를 사용하여 빌드
-                                bat ".\\mvnw.cmd clean install --settings %MAVEN_SETTINGS%"
+                                // Maven을 MAVEN_HOME 경로에서 실행하여 빌드
+                                bat "%MAVEN_HOME%\\bin\\mvn clean install --settings %MAVEN_SETTINGS%"
                             }
                         }
                     }
@@ -39,10 +39,10 @@ pipeline {
                 configFileProvider([configFile(fileId: 'maven-settings-xml', variable: 'MAVEN_SETTINGS')]) {
                     timeout(time: 20, unit: 'MINUTES') {
                         script {
-                            // 프로젝트 루트 디렉토리로 이동
+                            // 프로젝트 디렉토리로 이동
                             dir('softwareengineering') {
-                                // Maven Wrapper를 사용하여 테스트
-                                bat ".\\mvnw.cmd test --settings %MAVEN_SETTINGS%"
+                                // Maven을 MAVEN_HOME 경로에서 실행하여 테스트
+                                bat "%MAVEN_HOME%\\bin\\mvn test --settings %MAVEN_SETTINGS%"
                             }
                         }
                     }
@@ -60,10 +60,10 @@ pipeline {
                 configFileProvider([configFile(fileId: 'maven-settings-xml', variable: 'MAVEN_SETTINGS')]) {
                     timeout(time: 30, unit: 'MINUTES') {
                         script {
-                            // 프로젝트 루트 디렉토리로 이동
+                            // 프로젝트 디렉토리로 이동
                             dir('softwareengineering') {
-                                // Maven Wrapper를 사용하여 성능 테스트
-                                bat ".\\mvnw.cmd exec:java -Dexec.mainClass=\"com.example.PerformanceTest\" --settings %MAVEN_SETTINGS%"
+                                // Maven을 MAVEN_HOME 경로에서 실행하여 성능 테스트
+                                bat "%MAVEN_HOME%\\bin\\mvn exec:java -Dexec.mainClass=\"com.example.PerformanceTest\" --settings %MAVEN_SETTINGS%"
                             }
                         }
                     }
