@@ -14,8 +14,8 @@ public class PerformanceTest {
         
         // 책들을 id를 기준으로 오름차순 정렬
 	    Arrays.sort(books, (b1, b2) -> Integer.compare(b1.getId(), b2.getId()));
-	    Book temp_book = books[1000000];
 	    
+	    Book temp_book = books[999999];
 	    
 	    long startTime = System.nanoTime(); // 성능 테스트 시작 시간
 	    BookSearch.search_bs(books, temp_book.getId()); // search_bs 함수 시행
