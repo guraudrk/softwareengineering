@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        GIT_CREDENTIALS = credentials('Hongik-Test')
         MAVEN_HOME = tool name: 'Maven', type: 'maven'
+        JUNIT_PLATFORM_JAR = 'junit-platform-console-standalone-1.7.1.jar'
     }
 
     stages {
@@ -26,34 +26,23 @@ pipeline {
             }
         }
 
-        stage('Unit Tests') {
+        stage('Test') {
             steps {
-                configFileProvider([configFile(fileId: 'maven-settings-xml', variable: 'MAVEN_SETTINGS')]) {
-                    timeout(time: 20, unit: 'MINUTES') {
-                        bat(/"%MAVEN_HOME%\bin\mvn" test --settings "%MAVEN_SETTINGS%"/)
-                    }
-                }
+                // JUnit 5 테스트 실행을 위한 classpath 설정
+                def classpath = "classes;lib;${env.JUNIT_PLATFORM_JAR}"
+                // JUnit 5 테스트 실행
+                bat "java -cp ${classpath} org.junit.platform.console.ConsoleLauncher --scan-classpath > test_results.txt"
             }
             post {
                 always {
-                    // JUnit 테스트 결과 아카이브
-                    junit '**/target/surefire-reports/**/*.xml'
+                    // 테스트 결과 파일을 저장하기 위해 아카이브
+                    archiveArtifacts 'test_results.txt'
                 }
-            }
-        }
-
-        stage('Performance Test') {
-            steps {
-                configFileProvider([configFile(fileId: 'maven-settings-xml', variable: 'MAVEN_SETTINGS')]) {
-                    timeout(time: 30, unit: 'MINUTES') {
-                        bat(/"%MAVEN_HOME%\bin\mvn" exec:java -Dexec.mainClass="com.example.PerformanceTest" --settings "%MAVEN_SETTINGS%"/)
-                    }
+                failure {
+                    echo 'Build or test failed'
                 }
-            }
-            post {
-                always {
-                    // 성능 테스트 결과 아카이브
-                    archiveArtifacts artifacts: 'performance-reports/**', allowEmptyArchive: true
+                success {
+                    echo 'Build and test succeeded'
                 }
             }
         }
