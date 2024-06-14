@@ -28,10 +28,12 @@ pipeline {
 
         stage('Test') {
             steps {
-                // JUnit 5 테스트 실행을 위한 classpath 설정
-                def classpath = "classes;lib;${JUNIT_PLATFORM_JAR}"
-                // JUnit 5 테스트 실행
-                bat "java -cp ${classpath} org.junit.platform.console.ConsoleLauncher --scan-classpath > test_results.txt"
+                script {
+                    // JUnit 5 테스트 실행을 위한 classpath 설정
+                    def classpath = "classes;lib;${env.JUNIT_PLATFORM_JAR}"
+                    // JUnit 5 테스트 실행
+                    bat "java -cp ${classpath} org.junit.platform.console.ConsoleLauncher --scan-classpath > test_results.txt"
+                }
             }
             post {
                 always {
