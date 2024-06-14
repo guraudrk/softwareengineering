@@ -20,7 +20,7 @@ pipeline {
             steps {
                 configFileProvider([configFile(fileId: 'maven-settings-xml', variable: 'MAVEN_SETTINGS')]) {
                     timeout(time: 20, unit: 'MINUTES') {
-                        bat(/"%MAVEN_HOME%\bin\mvn" clean install --settings "%MAVEN_SETTINGS%"/)
+                        bat "\"${MAVEN_HOME}\\bin\\mvn\" clean install --settings \"${MAVEN_SETTINGS}\""
                     }
                 }
             }
@@ -29,7 +29,7 @@ pipeline {
         stage('Test') {
             steps {
                 // JUnit 5 테스트 실행을 위한 classpath 설정
-                def classpath = "classes;lib;${env.JUNIT_PLATFORM_JAR}"
+                def classpath = "classes;lib;${JUNIT_PLATFORM_JAR}"
                 // JUnit 5 테스트 실행
                 bat "java -cp ${classpath} org.junit.platform.console.ConsoleLauncher --scan-classpath > test_results.txt"
             }
