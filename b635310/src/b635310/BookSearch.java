@@ -9,9 +9,9 @@ public class BookSearch {
 		    // 책들을 id를 기준으로 오름차순 정렬
 		    Arrays.sort(books, (b1, b2) -> Integer.compare(b1.getId(), b2.getId()));
 	        
-		    // (1)부터 시작하여 (책 갯수)만큼 범위 설정
-		    int left = 1;
-	        int right = books.length;
+		    // (0)부터 시작하여 (책 갯수-1)만큼 범위 설정
+		    int left = 0;
+	        int right = books.length-1;
 
 	        // 범위를 수정해가며(좁혀가며) 이진 탐색
 	        while (left <= right) {
